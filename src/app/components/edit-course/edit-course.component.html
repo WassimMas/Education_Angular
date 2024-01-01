@@ -1,0 +1,70 @@
+<section class="home_banner_area">
+  <div class="banner_inner">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="banner_content text-center">
+            <h2 class="text-uppercase mt-4 mb-5">User Information</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section_gap registration_area">
+  <div class="container">
+    <div class="row d-flex align-items-center justify-content-center">
+      <div class="offset-lg-1">
+        <div class="register_form">
+          <h3>Edit Course</h3>
+
+          <form
+            class="form_area"
+            #editUserForm="ngForm"
+            (ngSubmit)="editCourse()"
+          >
+            <div class="row">
+              <div class="col-lg-12 form_group">
+                <input
+                  name="firstName"
+                  [(ngModel)]="course.name"
+                  placeholder="firstName"
+                  required=""
+                  type="text"
+                />
+
+                <input
+                  [(ngModel)]="course.description"
+                  name="lastName"
+                  placeholder="lastName"
+                  required=""
+                  type="text"
+                />
+
+                <input
+                  name="email"
+                  placeholder="Your Email Address"
+                  [(ngModel)]="course.duration"
+                  type="email"
+                />
+
+                <input
+                  *ngIf="course && course.teacher"
+                  name="text"
+                  placeholder="Teacher"
+                  required=""
+                  type="text"
+                  [(ngModel)]="course.teacher.firstName"
+                />
+              </div>
+              <div class="col-lg-12 text-center">
+                <button class="primary-btn">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

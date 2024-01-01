@@ -1,0 +1,95 @@
+<section class="home_banner_area">
+  <div class="banner_inner">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="banner_content text-center">
+            <h2 class="text-uppercase mt-4 mb-5">User Information</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section_gap registration_area">
+  <div class="container">
+    <div class="row d-flex align-items-center justify-content-center">
+      <div class="offset-lg-1">
+        <div class="register_form">
+          <h3>Edit User</h3>
+
+          <form
+            class="form_area"
+            #editUserForm="ngForm"
+            (ngSubmit)="editUser()"
+          >
+            <div class="row">
+              <div class="col-lg-12 form_group">
+                <input
+                  name="firstName"
+                  [(ngModel)]="user.firstName"
+                  placeholder="firstName"
+                  required=""
+                  type="text"
+                />
+
+                <input
+                  [(ngModel)]="user.lastName"
+                  name="lastName"
+                  placeholder="lastName"
+                  required=""
+                  type="text"
+                />
+
+                <input
+                  name="email"
+                  placeholder="Your Email Address"
+                  [(ngModel)]="user.email"
+                  type="email"
+                />
+
+                <input
+                  name="phone"
+                  placeholder="phone"
+                  required=""
+                  type="number"
+                  [(ngModel)]="user.phone"
+                />
+
+                <input
+                  name="address"
+                  placeholder="address"
+                  required=""
+                  type="tel"
+                  [(ngModel)]="user.address"
+                />
+
+                <div class="form-group">
+                  <input
+                    type="text"
+                    name="specialityy"
+                    [(ngModel)]="user.speciality"
+                  />
+                </div>
+                <div class="form-group">
+                  <input type="text" name="role" [(ngModel)]="user.role" />
+                </div>
+                <div class="form-group">
+                  <input
+                    name="speciality"
+                    type="text"
+                    [(ngModel)]="user.status"
+                  />
+                </div>
+              </div>
+              <div class="col-lg-12 text-center">
+                <button class="primary-btn">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
