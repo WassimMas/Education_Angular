@@ -12,7 +12,11 @@ const cors = require("cors");
 // import mongoose module
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1:27017/educationDB");
+mongoose.connect("mongodb://127.0.0.1:27017/educationDB"),
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  };
 
 // import bcrypt module
 const bcrypt = require("bcrypt");
@@ -123,6 +127,8 @@ const secretKey = "croco2023";
 app.use(
   session({
     secret: secretKey,
+    resave: false,
+    saveUninitialized: false,
   })
 );
 
@@ -130,6 +136,7 @@ app.use(
 const User = require("./models/user");
 const Course = require("./models/course");
 const Evaluation = require("./models/evaluation");
+const Class = require("./models/class");
 // business Logic : get course by ID
 
 app.get("/courses/:id", (req, res) => {
@@ -198,7 +205,53 @@ app.put("/courses", (req, res) => {
   });
 });
 
-// business logic : add evaluation
+// Business logic: add class
+app.post("/classes", async (req, res) => {
+  console.log("Here into BL add class", req.body);
+
+  try {
+    const students = await User.find({ _id: { $in: req.body.studentIds } });
+    const teacher = await User.findById(req.body.teacherId);
+    const course = await Course.findById(req.body.courseId);
+
+    if (!teacher) {
+      return res.json({ msg: "Teacher not found" });
+    }
+
+    if (!course) {
+      return res.json({ msg: "Course not found" });
+    }
+
+    const newClass = new Class({
+      name: req.body.name,
+      teacher: teacher._id,
+      students: [], // Initialize with an empty array
+      course: course._id,
+    });
+
+    const savedClass = await newClass.save();
+
+    // Update the students array using $push
+    await Class.updateOne(
+      { _id: savedClass._id },
+      { $push: { students: { $each: students.map((student) => student._id) } } }
+    );
+
+    students.forEach(async (student) => {
+      student.classes.push(savedClass);
+      await student.save();
+    });
+    // Update teacher's classes array
+    teacher.classes.push(savedClass);
+    await teacher.save();
+
+    res.json({ msg: "Class added with success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Failed to add class" });
+  }
+});
+
 // business logic : add evaluation
 app.post("/evaluations", (req, res) => {
   console.log("here into BL add evaluation", req.body);

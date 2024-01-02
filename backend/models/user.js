@@ -28,6 +28,12 @@ const userSchema = mongoose.Schema({
       ref: "Evaluation",
     },
   ],
+  classes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+    },
+  ],
 });
 
 // creation User Model

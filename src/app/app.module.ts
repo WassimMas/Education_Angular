@@ -29,6 +29,7 @@ import { CourseInfoComponent } from './components/course-info/course-info.compon
 import { EditCourseComponent } from './components/edit-course/edit-course.component';
 import { CourseComponent } from './components/course/course.component';
 import { AddEvaluationComponent } from './components/add-evaluation/add-evaluation.component';
+import { AddClassComponent } from './components/add-class/add-class.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { AddEvaluationComponent } from './components/add-evaluation/add-evaluati
     EditCourseComponent,
     CourseComponent,
     AddEvaluationComponent,
+    AddClassComponent,
   ],
   imports: [
     BrowserModule,

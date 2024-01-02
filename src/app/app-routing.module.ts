@@ -13,6 +13,7 @@ import { AddCourseComponent } from './components/add-course/add-course.component
 import { CourseInfoComponent } from './components/course-info/course-info.component';
 import { EditCourseComponent } from './components/edit-course/edit-course.component';
 import { AddEvaluationComponent } from './components/add-evaluation/add-evaluation.component';
+import { AddClassComponent } from './components/add-class/add-class.component';
 
 const routes: Routes = [
   { path: 'signup', component: SignupComponent },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'courseInfo/:id', component: CourseInfoComponent },
   { path: 'editCourse/:id', component: EditCourseComponent },
   { path: 'addEvaluation', component: AddEvaluationComponent },
+  { path: 'addClass', component: AddClassComponent },
 ];
 
 @NgModule({
