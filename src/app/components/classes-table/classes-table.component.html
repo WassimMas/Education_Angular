@@ -1,0 +1,36 @@
+<table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Teacher</th>
+      <th scope="col">Course</th>
+      <th scope="col">Students</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let C of classes">
+      <th scope="row">{{ C._id }}</th>
+      <td>{{ C.name }}</td>
+      <td>{{ C.teacher.firstName }}</td>
+      <td>{{ C.course.name }}</td>
+      <td>
+        <!-- Iterate through the students array to display each student's name -->
+        <div *ngFor="let student of C.students">
+          {{ student.firstName }}
+        </div>
+      </td>
+
+      <td>
+        <button class="btn btn-info" (click)="displayClass(C._id)">
+          Display
+        </button>
+        <button class="btn btn-warning" (click)="editClass(C._id)">Edit</button>
+        <button class="btn btn-danger" (click)="deleteClass(C._id)">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
