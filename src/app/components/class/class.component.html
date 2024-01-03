@@ -1,0 +1,18 @@
+<div class="text">
+  <p class="ml-3">Class Name :</p>
+  <h3 class="mb-4 ml-3">
+    {{ classInput.name }}
+  </h3>
+  <p class="ml-3">Teacher :</p>
+  <h3 class="mb-4 ml-3">
+    {{ classInput.teacher.firstName }}
+  </h3>
+  <p class="ml-3">Course :</p>
+  <h3 class="mb-4 ml-3">
+    {{ classInput.course.name }}
+  </h3>
+  <p class="ml-3">Students :</p>
+  <h3 class="mb-4 ml-3" *ngFor="let student of classInput.students">
+    *{{ student.firstName }}
+  </h3>
+</div>
