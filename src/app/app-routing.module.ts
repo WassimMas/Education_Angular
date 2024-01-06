@@ -14,6 +14,10 @@ import { CourseInfoComponent } from './components/course-info/course-info.compon
 import { EditCourseComponent } from './components/edit-course/edit-course.component';
 import { AddEvaluationComponent } from './components/add-evaluation/add-evaluation.component';
 import { AddClassComponent } from './components/add-class/add-class.component';
+import { ClassInfoComponent } from './components/class-info/class-info.component';
+import { EditClassComponent } from './components/edit-class/edit-class.component';
+import { EvaluationInfoComponent } from './components/evaluation-info/evaluation-info.component';
+import { SearchTeacherComponent } from './components/search-teacher/search-teacher.component';
 
 const routes: Routes = [
   { path: 'signup', component: SignupComponent },
@@ -33,6 +37,10 @@ const routes: Routes = [
   { path: 'editCourse/:id', component: EditCourseComponent },
   { path: 'addEvaluation', component: AddEvaluationComponent },
   { path: 'addClass', component: AddClassComponent },
+  { path: 'classInfo/:id', component: ClassInfoComponent },
+  { path: 'editClass/:id', component: EditClassComponent },
+  { path: 'evaluationInfo/:id', component: EvaluationInfoComponent },
+  { path: 'search', component: SearchTeacherComponent },
 ];
 
 @NgModule({

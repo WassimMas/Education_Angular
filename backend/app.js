@@ -69,59 +69,6 @@ app.use((req, res, next) => {
 
   next();
 });
-//configuration multer
-app.use("/images", express.static(path.join("backend/images")));
-app.use("/files", express.static(path.join("backend/files")));
-
-const MIME_TYPE = {
-  "image/png": "png",
-  "image/jpeg": "jpg",
-  "image/jpg": "jpg",
-};
-
-const MIME_TYPE_ = {
-  "application/pdf": "pdf",
-  "application/octet-stream": "pdf",
-};
-
-const storageConfig = multer.diskStorage({
-  // destination
-  destination: (req, file, cb) => {
-    const isValid = MIME_TYPE[file.mimetype];
-    let error = new Error("Mime type is invalid");
-    if (isValid) {
-      error = null;
-    }
-    cb(null, "backend/images");
-  },
-  filename: (req, file, cb) => {
-    const name = file.originalname.toLowerCase().split(" ").join("-");
-    const extension = MIME_TYPE[file.mimetype];
-    const imgName = name + "-" + Date.now() + "-crococoder-" + "." + extension;
-    cb(null, imgName);
-  },
-});
-
-const storageConfigPdf = multer.diskStorage({
-  // destination
-  destination: (req, file, cb) => {
-    const isValid =
-      MIME_TYPE_["application/pdf"] || MIME_TYPE_["application/octet-stream"];
-    let error = new Error("Mime type is invalid");
-    if (isValid) {
-      error = null;
-    }
-    cb(null, "backend/files");
-  },
-  filename: (req, file, cb) => {
-    const name = file.originalname.toLowerCase().split(" ").join("-");
-    const extension = MIME_TYPE_[file.mimetype];
-    console.log("File MIME type:", file.mimetype); // Log the MIME type
-    console.log("Extension:", extension); // Log the extension
-    const cvName = name + "-" + Date.now() + "-crococoder-" + "." + extension;
-    cb(null, cvName);
-  },
-});
 // Session Configuration
 const secretKey = "croco2023";
 app.use(
@@ -131,6 +78,42 @@ app.use(
     saveUninitialized: false,
   })
 );
+//configuration multer
+app.use("/images", express.static(path.join("backend/images")));
+app.use("/files", express.static(path.join("backend/files")));
+
+const MIME_TYPE = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "application/pdf": "pdf",
+  "application/octet-stream": "pdf",
+};
+
+// configuration multer
+const storageConfig = multer.diskStorage({
+  // destination
+  destination: (req, file, cb) => {
+    let uploadPath = "backend/images"; // Dossier par défaut pour les images
+
+    if (req.body.role == "teacher") {
+      uploadPath = "backend/files"; // Dossier spécifique pour les enseignants
+    }
+
+    const isValid = MIME_TYPE[file.mimetype];
+    let error = new Error("Mime type is invalid");
+    if (isValid) {
+      error = null;
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const extension = MIME_TYPE[file.mimetype];
+    const ifname = name + "-" + Date.now() + "-crococoder-" + "." + extension;
+    cb(null, ifname);
+  },
+});
 
 //Models Importation
 const User = require("./models/user");
@@ -252,6 +235,118 @@ app.post("/classes", async (req, res) => {
   }
 });
 
+// business logic : get all classes :
+
+app.get("/classes", (req, res) => {
+  Class.find()
+    .populate("teacher")
+    .populate("students")
+    .populate("course")
+    .then((docs) => {
+      console.log("Here into BL get all classes", docs);
+      res.json({ classes: docs });
+    });
+});
+
+// business logic : get class by ID
+
+app.get("/classes/:id", (req, res) => {
+  Class.findById(req.params.id)
+    .populate("students")
+    .populate("course")
+    .populate("teacher")
+    .then((doc) => {
+      console.log("Here into BL get class by ID", doc);
+      if (doc) {
+        res.json({ class: doc });
+      }
+    });
+});
+
+// business Logic : delete class by ID
+
+app.delete("/classes/:id", (req, res) => {
+  Class.deleteOne({ _id: req.params.id }).then((deletedItem) => {
+    console.log("Here deleted Item", deletedItem);
+    if (deletedItem.deletedCount == 1) {
+      res.json({ msg: "Deleted with success" });
+    } else {
+      res.json({ msg: "Error" });
+    }
+  });
+});
+
+// Business logic: edit class
+app.put("/classes/:id", async (req, res) => {
+  const classId = req.params.id;
+  console.log("Here into BL edit class", req.body);
+
+  try {
+    const existingClass = await Class.findById(classId);
+
+    if (!existingClass) {
+      return res.status(404).json({ msg: "Class not found" });
+    }
+
+    const { name, teacherId, studentIds, courseId } = req.body;
+
+    if (name) {
+      existingClass.name = name;
+    }
+
+    if (teacherId) {
+      const teacher = await User.findById(teacherId);
+      if (!teacher) {
+        return res.status(404).json({ msg: "Teacher not found" });
+      }
+      existingClass.teacher = teacher._id;
+    }
+
+    if (courseId) {
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ msg: "Course not found" });
+      }
+      existingClass.course = course._id;
+    }
+
+    if (studentIds) {
+      // Remove existing students
+      existingClass.students = [];
+
+      const students = await User.find({ _id: { $in: studentIds } });
+
+      // Update the students array using $push
+      existingClass.students = students.map((student) => student._id);
+
+      students.forEach(async (student) => {
+        student.classes.push(existingClass);
+        await student.save();
+      });
+    }
+
+    await existingClass.save();
+
+    res.json({ msg: "Class edited with success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Failed to edit class" });
+  }
+});
+
+// business logic get all evaluations :
+app.get("/evaluations", (req, res) => {
+  Evaluation.find()
+    .populate("student")
+    .populate("course")
+    .then((docs) => {
+      console.log("here into bl get all evaluations", docs);
+      if (docs) {
+        res.json({ evaluations: docs });
+      }
+    });
+});
+
 // business logic : add evaluation
 app.post("/evaluations", (req, res) => {
   console.log("here into BL add evaluation", req.body);
@@ -343,6 +438,28 @@ app.put("/users", (req, res) => {
       res.json({ isUpdated: false });
     }
   });
+});
+
+// business logic : search teacher by speciality
+app.post("/users/search-teachers", async (req, res) => {
+  const { specialty } = req.body;
+  console.log("here speciality", req.body);
+  if (!specialty) {
+    return res.status(400).json({ error: "Specialty is required" });
+  }
+
+  try {
+    const searchResults = await User.find({
+      role: "teacher",
+      speciality: specialty,
+    });
+    console.log("Search Results:", searchResults);
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // Business Logic : login

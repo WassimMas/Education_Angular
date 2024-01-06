@@ -11,4 +11,7 @@ export class EvaluationService {
   addEvaluation(obj: any) {
     return this.httpClient.post<{ msg: any }>(this.evaluationUrl, obj);
   }
+  getAllEvaluations() {
+    return this.httpClient.get<{ evaluations: any }>(this.evaluationUrl);
+  }
 }

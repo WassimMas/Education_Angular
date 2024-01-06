@@ -30,6 +30,15 @@ import { EditCourseComponent } from './components/edit-course/edit-course.compon
 import { CourseComponent } from './components/course/course.component';
 import { AddEvaluationComponent } from './components/add-evaluation/add-evaluation.component';
 import { AddClassComponent } from './components/add-class/add-class.component';
+import { ClassesTableComponent } from './components/classes-table/classes-table.component';
+import { ClassInfoComponent } from './components/class-info/class-info.component';
+import { EditClassComponent } from './components/edit-class/edit-class.component';
+import { ClassComponent } from './components/class/class.component';
+import { ClassTableStudentComponent } from './components/class-table-student/class-table-student.component';
+import { EvaluationsTableComponent } from './components/evaluations-table/evaluations-table.component';
+import { EvaluationInfoComponent } from './components/evaluation-info/evaluation-info.component';
+import { CoursesComponent } from './components/courses/courses.component';
+import { SearchTeacherComponent } from './components/search-teacher/search-teacher.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +68,15 @@ import { AddClassComponent } from './components/add-class/add-class.component';
     CourseComponent,
     AddEvaluationComponent,
     AddClassComponent,
+    ClassesTableComponent,
+    ClassInfoComponent,
+    EditClassComponent,
+    ClassComponent,
+    ClassTableStudentComponent,
+    EvaluationsTableComponent,
+    EvaluationInfoComponent,
+    CoursesComponent,
+    SearchTeacherComponent,
   ],
   imports: [
     BrowserModule,

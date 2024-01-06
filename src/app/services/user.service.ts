@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -53,5 +54,12 @@ export class UserService {
 
   getStudent() {
     return this.httpClient.get<{ students: any }>(`${this.userUrl}/students`);
+  }
+  getAllTeachersBySpecialty(requestData: {
+    specialty: string;
+  }): Observable<any> {
+    const url = `${this.userUrl}/search-teachers`;
+    const body = { specialty: requestData.specialty };
+    return this.httpClient.post(url, requestData);
   }
 }

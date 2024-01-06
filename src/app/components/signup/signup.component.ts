@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
 
@@ -41,6 +46,7 @@ export class SignupComponent implements OnInit {
       img: [''],
       childPhone: ['', [Validators.required]],
     });
+    this.addControlsBasedOnPath();
   }
 
   matchPwd() {
@@ -73,35 +79,43 @@ export class SignupComponent implements OnInit {
   }
 
   onImageSelected(event: Event) {
-    this.handleFileInput(event, 'img', (result) => {
-      this.imagePreview = result;
-    });
+    const fileInput = event.target as HTMLInputElement;
+    const file = (fileInput.files as FileList)[0];
+    this.signupForm.patchValue({ img: file });
+    this.signupForm.updateValueAndValidity();
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   onCvSelected(event: Event) {
-    this.handleFileInput(event, 'cv', (result) => {
-      // Display PDF preview using the result
-      this.cvPreview = result;
-    });
-  }
-
-  private handleFileInput(
-    event: Event,
-    controlName: string,
-    callback: (result: any) => void
-  ) {
     const fileInput = event.target as HTMLInputElement;
     const file = (fileInput.files as FileList)[0];
-
-    this.signupForm.patchValue({ [controlName]: file });
-    this.signupForm.get(controlName)?.updateValueAndValidity();
-
+    this.signupForm.patchValue({ cv: file });
+    this.signupForm.updateValueAndValidity();
     const reader = new FileReader();
-
     reader.onload = () => {
-      callback(reader.result);
+      this.cvPreview = reader.result as string;
     };
-
     reader.readAsDataURL(file);
+  }
+
+  private addControlsBasedOnPath(): void {
+    if (this.path === '/inscription') {
+      this.signupForm.addControl('img', new FormControl(''));
+    } else if (this.path === '/checkIn') {
+      this.signupForm.addControl(
+        'childPhone',
+        new FormControl('', [Validators.required])
+      );
+    } else if (this.path === '/register') {
+      this.signupForm.addControl(
+        'speciality',
+        new FormControl('', [Validators.required])
+      );
+      this.signupForm.addControl('cv', new FormControl(''));
+    }
   }
 }

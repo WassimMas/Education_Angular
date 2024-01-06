@@ -28,7 +28,52 @@
               <a class="nav-link" href="index.html">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="about-us.html">About</a>
+              <a class="nav-link" routerLink="dashboardStudent">Student</a>
+            </li>
+            <li class="nav-item submenu dropdown">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-toggle="dropdown"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                >Admin</a
+              >
+              <ul class="dropdown-menu">
+                <li class="nav-item">
+                  <a class="nav-link" routerLink="dashboardAdmin">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" routerLink="addClass">Add Class</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item submenu dropdown">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-toggle="dropdown"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                >Teacher</a
+              >
+              <ul class="dropdown-menu">
+                <li class="nav-item">
+                  <a class="nav-link" routerLink="dashboardTeacher"
+                    >Dashboard</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" routerLink="addCourse">Add Course</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" routerLink="addEvaluation"
+                    >Add Evaluation</a
+                  >
+                </li>
+              </ul>
             </li>
             <li class="nav-item submenu dropdown">
               <a
@@ -55,27 +100,8 @@
                 </li>
               </ul>
             </li>
-            <li class="nav-item submenu dropdown">
-              <a
-                href="#"
-                class="nav-link dropdown-toggle"
-                data-toggle="dropdown"
-                role="button"
-                aria-haspopup="true"
-                aria-expanded="false"
-                >Blog</a
-              >
-              <ul class="dropdown-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="blog.html">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="single-blog.html">Blog Details</a>
-                </li>
-              </ul>
-            </li>
             <li class="nav-item">
-              <a class="nav-link">Contact</a>
+              <a class="nav-link" routerLink="login">Login</a>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link search" id="search">
