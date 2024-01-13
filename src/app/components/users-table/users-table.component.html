@@ -32,6 +32,11 @@
         <button class="btn btn-danger" (click)="deleteUser(user._id)">
           Delete
         </button>
+        <input
+          type="checkbox"
+          [(ngModel)]="user.isChecked"
+          (change)="changeUserStatus(user)"
+        />
       </td>
     </tr>
   </tbody>

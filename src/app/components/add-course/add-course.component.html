@@ -54,14 +54,30 @@
                 id="teamId"
                 class="form-control"
               >
-                <option
-                  style="color: black"
-                  *ngFor="let T of teachers"
-                  [value]="T._id"
-                >
-                  {{ T.firstName }}
+                <option style="color: black" [value]="teacherId">
+                  {{ user.firstName }}
                 </option>
               </select>
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                (click)="filePicker.click()"
+                class="btn btn-warning"
+              >
+                Select Image
+              </button>
+              <div style="visibility: hidden">
+                <input
+                  (change)="onImageSelected($event)"
+                  #filePicker
+                  type="file"
+                  name="img"
+                />
+              </div>
+              <div class="text-center">
+                <img [src]="imagePreview" width="200px" />
+              </div>
             </div>
 
             <div class="form-group">

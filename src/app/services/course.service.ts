@@ -16,8 +16,14 @@ export class CourseService {
     return this.httpClient.get<{ course: any }>(`${this.courseUrl}/${id}`);
   }
 
-  addCourse(obj: any) {
-    return this.httpClient.post<{ msg: any }>(this.courseUrl, obj);
+  addCourse(obj: any, img: File) {
+    let formData = new FormData();
+    formData.append('name', obj.name);
+    formData.append('description', obj.description);
+    formData.append('duration', obj.duration);
+    formData.append('teacher', obj.teacherId);
+    formData.append('img', img);
+    return this.httpClient.post<{ msg: any }>(this.courseUrl, formData);
   }
 
   deleteCourseById(id: any) {
@@ -26,5 +32,8 @@ export class CourseService {
 
   editCourse(obj: any) {
     return this.httpClient.put<{ msg: any }>(this.courseUrl, obj);
+  }
+  getCoursesByUserId(userId: string) {
+    return this.httpClient.get<any>(`${this.courseUrl}/user/${userId}`);
   }
 }

@@ -90,21 +90,23 @@ const MIME_TYPE = {
   "application/octet-stream": "pdf",
 };
 
-// configuration multer
 const storageConfig = multer.diskStorage({
   // destination
   destination: (req, file, cb) => {
-    let uploadPath = "backend/images"; // Dossier par défaut pour les images
+    let uploadPath = "backend/files"; // Default folder for images
 
     if (req.body.role == "teacher") {
-      uploadPath = "backend/files"; // Dossier spécifique pour les enseignants
+      uploadPath = "backend/files"; // Specific folder for teachers
     }
 
     const isValid = MIME_TYPE[file.mimetype];
-    let error = new Error("Mime type is invalid");
-    if (isValid) {
-      error = null;
+
+    if (!isValid) {
+      const error = new Error("Mime type is invalid");
+      error.code = "INVALID_MIME_TYPE";
+      return cb(error, null);
     }
+
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
@@ -114,12 +116,30 @@ const storageConfig = multer.diskStorage({
     cb(null, ifname);
   },
 });
+const imgConfig = multer.diskStorage({
+  // destination
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE[file.mimetype];
+    let error = new Error("Mime type is invalid");
+    if (isValid) {
+      error = null;
+    }
+    cb(null, "backend/images");
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const extension = MIME_TYPE[file.mimetype];
+    const imgName = name + "-" + Date.now() + "-crococoder-" + "." + extension;
+    cb(null, imgName);
+  },
+});
 
 //Models Importation
 const User = require("./models/user");
 const Course = require("./models/course");
 const Evaluation = require("./models/evaluation");
 const Class = require("./models/class");
+
 // business Logic : get course by ID
 
 app.get("/courses/:id", (req, res) => {
@@ -153,26 +173,32 @@ app.delete("/courses/:id", (req, res) => {
 });
 
 // business logic : add course
-app.post("/courses", (req, res) => {
-  console.log("here into BL add course", req.body);
-  User.findById(req.body.teacherId).then((teacher) => {
-    if (!teacher) {
-      return res.json({ msg: "teacher not found" });
-    }
-    const course = new Course({
-      name: req.body.name,
-      description: req.body.description,
-      duration: req.body.duration,
-      teacher: teacher._id,
-    });
+app.post(
+  "/courses",
+  multer({ storage: storageConfig }).fields([{ name: "img", maxCount: 1 }]),
+  (req, res) => {
+    console.log("here into BL add course", req.body);
+    User.findById(req.body.teacher).then((teacher) => {
+      if (!teacher) {
+        return res.json({ msg: "teacher not found" });
+      }
 
-    course.save((err, doc) => {
-      teacher.courses.push(course);
-      teacher.save();
-      res.json({ msg: "Course addedd with success" });
+      const course = new Course({
+        name: req.body.name,
+        description: req.body.description,
+        duration: req.body.duration,
+        teacher: teacher._id,
+        img: `http://localhost:3000/files/${req.files["img"][0].filename}`,
+      });
+
+      course.save((err, doc) => {
+        teacher.courses.push(course);
+        teacher.save();
+        res.json({ msg: "Course addedd with success" });
+      });
     });
-  });
-});
+  }
+);
 
 // business logic : edit course
 
@@ -186,6 +212,18 @@ app.put("/courses", (req, res) => {
       res.json({ msg: "error" });
     }
   });
+});
+// Assuming you have a route like '/courses/user/:userId'
+app.get("/courses/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const courses = await Course.find({ teacher: userId }).populate("teacher");
+    res.status(200).json({ courses });
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // Business logic: add class
@@ -334,6 +372,36 @@ app.put("/classes/:id", async (req, res) => {
   }
 });
 
+//business logic : get classes by student ID
+app.get("/classes/student/:studentId", async (req, res) => {
+  const studentId = req.params.studentId;
+
+  try {
+    const classes = await Class.find({ students: studentId })
+      .populate("students")
+      .populate("teacher")
+      .populate("course");
+    res.status(200).json({ classes });
+  } catch (error) {
+    console.error("Error fetching classes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//business logic : get evaluations by student ID
+app.get("/evaluations/student/:studentId", async (req, res) => {
+  const studentId = req.params.studentId;
+
+  try {
+    const evaluations = await Evaluation.find({ student: studentId })
+      .populate("student")
+      .populate("course");
+    res.status(200).json({ evaluations });
+  } catch (error) {
+    console.error("Error fetching evaluations:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 // business logic get all evaluations :
 app.get("/evaluations", (req, res) => {
   Evaluation.find()
@@ -440,6 +508,28 @@ app.put("/users", (req, res) => {
   });
 });
 
+// business logic update status
+app.put("/users/status", async (req, res) => {
+  const updatedUser = req.body;
+  console.log("here updated user", updatedUser);
+
+  try {
+    const result = await User.updateOne(
+      { _id: updatedUser._id },
+      { $set: updatedUser }
+    );
+
+    if (result.nModified === 1) {
+      res.json({ msg: "updated with success" });
+    } else {
+      res.json({ msg: "error" });
+    }
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
 // business logic : search teacher by speciality
 app.post("/users/search-teachers", async (req, res) => {
   const { specialty } = req.body;
@@ -462,6 +552,73 @@ app.post("/users/search-teachers", async (req, res) => {
   }
 });
 
+// business logic search class of children:
+
+app.post("/users/search-classes-for-child", (req, res) => {
+  console.log("here into BL search class", req.body);
+
+  const { childPhoneNumber } = req.body; // Extract phone number from the request body
+
+  User.findOne({ phone: childPhoneNumber })
+    .populate("classes")
+    .populate({
+      path: "classes",
+      populate: {
+        path: "teacher",
+      },
+    })
+    .populate({
+      path: "classes",
+      populate: {
+        path: "course",
+      },
+    })
+
+    .then((doc) => {
+      console.log("Here child object", doc);
+      if (!doc) {
+        return res.json({ msg: "child not found" });
+      }
+      return res.json({ classes: doc.classes });
+    })
+    .catch((error) => {
+      console.error("Error searching classes for child:", error);
+      return res.status(500).json({ msg: "Internal Server Error" });
+    });
+});
+
+// business logic : search evaluations for child
+app.post("/users/search-evaluations-for-child", (req, res) => {
+  console.log("here into BL search class", req.body);
+
+  const { childPhoneNumber } = req.body; // Extract phone number from the request body
+
+  User.findOne({ phone: childPhoneNumber })
+    .populate("evaluations")
+    .populate({
+      path: "evaluations",
+      populate: {
+        path: "student",
+      },
+    })
+    .populate({
+      path: "evaluations",
+      populate: {
+        path: "course",
+      },
+    })
+    .then((doc) => {
+      console.log("Here child object", doc);
+      if (!doc) {
+        return res.json({ msg: "child not found" });
+      }
+      return res.json({ evaluations: doc.evaluations });
+    })
+    .catch((error) => {
+      console.error("Error searching evaluations for child:", error);
+      return res.status(500).json({ msg: "Internal Server Error" });
+    });
+});
 // Business Logic : login
 
 app.post("/users/login", (req, res) => {
@@ -537,7 +694,7 @@ app.post(
 
       // Check if 'img' file exists in req.files
       if (req.files["img"] && req.files["img"][0]) {
-        req.body.img = `http://localhost:3000/images/${req.files["img"][0].filename}`;
+        req.body.img = `http://localhost:3000/files/${req.files["img"][0].filename}`;
       }
 
       const user = new User(req.body);
@@ -550,6 +707,21 @@ app.post(
     }
   }
 );
+
+// business logic : search university
+app.post("/universities", (req, res) => {
+  console.log("Here into BL search university", req.body);
+  let apiUrl = `http://universities.hipolabs.com/search?country=${req.body.cityName}`;
+  axios.get(apiUrl).then((response) => {
+    console.log("here api response", response.data);
+    const universities = response.data.map((university) => ({
+      name: university.name,
+      country: university.country,
+    }));
+
+    res.json({ result: universities });
+  });
+});
 
 // make app importable from another files
 module.exports = app;

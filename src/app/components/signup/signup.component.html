@@ -210,7 +210,10 @@
                   </div>
                 </div>
 
-                <div class="form-group" *ngIf="path === '/inscription'">
+                <div
+                  class="form-group"
+                  *ngIf="path === '/inscription' || path === '/register'"
+                >
                   <button
                     type="button"
                     (click)="filePicker.click()"

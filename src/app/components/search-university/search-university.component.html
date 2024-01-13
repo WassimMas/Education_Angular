@@ -1,0 +1,58 @@
+<section class="home_banner_area">
+  <div class="banner_inner">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="banner_content text-center">
+            <h2 class="text-uppercase mt-4 mb-5">Search University</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container" style="margin-top: 50px">
+  <div class="row">
+    <div class="col-lg-12">
+      <form [formGroup]="universityForm">
+        <div class="form-group">
+          <input
+            formControlName="cityName"
+            type="text"
+            class="form-control"
+            placeholder="university Name"
+            name="a"
+          />
+        </div>
+
+        <div
+          *ngIf="
+            universityForm.controls['cityName'].invalid &&
+            (universityForm.controls['cityName'].touched ||
+              universityForm.controls['cityName'].dirty)
+          "
+        ></div>
+
+        <div
+          style="color: white"
+          *ngIf="universityForm.controls['cityName'].errors?.['required']"
+        >
+          university name is required
+        </div>
+
+        <div class="form-group">
+          <input
+            type="submit"
+            class="btn btn-primary py-3 px-5"
+            value="search"
+            (click)="search()"
+          />
+        </div>
+      </form>
+      <div *ngFor="let U of universityResult">
+        <p>Name: {{ U.name }}</p>
+        <p>Country: {{ U.country }}</p>
+      </div>
+    </div>
+  </div>
+</div>

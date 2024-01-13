@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
@@ -9,7 +10,11 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class UsersTableComponent implements OnInit {
   users: any = [];
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    private httpClient: HttpClient
+  ) {}
 
   ngOnInit(): void {
     this.getAllUsers();
@@ -32,6 +37,23 @@ export class UsersTableComponent implements OnInit {
     this.userService.getUsers().subscribe((response: any) => {
       console.log('here response from BE', response.users);
       this.users = response.users;
+    });
+  }
+  changeUserStatus(user: any) {
+    console.log('here user', user);
+
+    const newStatus = user.status === 'valid' ? 'invalid' : 'valid';
+    user.status = newStatus;
+
+    // Call the updateUserStatus method in the service
+    this.userService.updateUserStatus(user).subscribe({
+      next: (response) => {
+        console.log('User status updated successfully', response);
+        // Optionally, update your local users array or trigger a refresh
+      },
+      error: (error) => {
+        console.error('Error updating user status:', error);
+      },
     });
   }
 }

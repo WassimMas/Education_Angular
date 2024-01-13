@@ -14,4 +14,9 @@ export class EvaluationService {
   getAllEvaluations() {
     return this.httpClient.get<{ evaluations: any }>(this.evaluationUrl);
   }
+  getEvaluationsByUserId(userId: string) {
+    return this.httpClient.get<{ evaluations: any }>(
+      `${this.evaluationUrl}/student/${userId}`
+    );
+  }
 }

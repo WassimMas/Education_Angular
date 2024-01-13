@@ -59,7 +59,22 @@ export class UserService {
     specialty: string;
   }): Observable<any> {
     const url = `${this.userUrl}/search-teachers`;
-    const body = { specialty: requestData.specialty };
+
     return this.httpClient.post(url, requestData);
+  }
+  searchClassesForChild(childPhoneNumber: string): Observable<any> {
+    const url = `${this.userUrl}/search-classes-for-child`;
+    const body = { childPhoneNumber };
+
+    return this.httpClient.post<{ classes: any }>(url, body);
+  }
+  searchEvaluationsForChild(childPhoneNumber: string): Observable<any> {
+    const url = `${this.userUrl}/search-evaluations-for-child`;
+    const body = { childPhoneNumber };
+    return this.httpClient.post<{ evaluations: any }>(url, body);
+  }
+  updateUserStatus(user: any): Observable<any> {
+    const url = `${this.userUrl}/status`;
+    return this.httpClient.put(url, user);
   }
 }

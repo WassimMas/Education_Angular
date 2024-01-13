@@ -8,6 +8,7 @@ const courseSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  img: String,
 });
 
 const course = mongoose.model("Course", courseSchema);

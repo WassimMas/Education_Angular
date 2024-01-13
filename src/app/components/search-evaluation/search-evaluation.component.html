@@ -1,0 +1,46 @@
+<section class="home_banner_area">
+  <div class="banner_inner">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="banner_content text-center">
+            <h2 class="text-uppercase mt-4 mb-5">Search Evaluation</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div>
+  <h2>Evaluations of your child</h2>
+  <div>
+    <label for="childPhoneNumber">Child's Phone Number:</label>
+    <input type="text" [(ngModel)]="childPhoneNumber" name="childPhoneNumber" />
+    <button (click)="searchEvaluationsForChild()">Search</button>
+  </div>
+  <table class="table table-dark">
+    <thead>
+      <tr>
+        <th scope="col">Evaluation ID</th>
+        <th scope="col">Student</th>
+        <th scope="col">Course</th>
+        <th scope="col">Note</th>
+        <th scope="col">Evaluation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let E of evaluations">
+        <td>{{ E._id }}</td>
+        <td>{{ E.student.firstName }} {{ E.student.lastname }}</td>
+        <td>{{ E.course.name }}</td>
+        <td>
+          {{ E.note }}
+        </td>
+        <td>
+          {{ E.evaluation }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

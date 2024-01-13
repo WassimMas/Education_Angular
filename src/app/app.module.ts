@@ -39,6 +39,10 @@ import { EvaluationsTableComponent } from './components/evaluations-table/evalua
 import { EvaluationInfoComponent } from './components/evaluation-info/evaluation-info.component';
 import { CoursesComponent } from './components/courses/courses.component';
 import { SearchTeacherComponent } from './components/search-teacher/search-teacher.component';
+import { SearchClassesComponent } from './components/search-classes/search-classes.component';
+import { SearchEvaluationComponent } from './components/search-evaluation/search-evaluation.component';
+import { CoursesTableTeacherComponent } from './components/courses-table-teacher/courses-table-teacher.component';
+import { SearchUniversityComponent } from './components/search-university/search-university.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +81,10 @@ import { SearchTeacherComponent } from './components/search-teacher/search-teach
     EvaluationInfoComponent,
     CoursesComponent,
     SearchTeacherComponent,
+    SearchClassesComponent,
+    SearchEvaluationComponent,
+    CoursesTableTeacherComponent,
+    SearchUniversityComponent,
   ],
   imports: [
     BrowserModule,

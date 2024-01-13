@@ -14,7 +14,7 @@
         *ngFor="let C of courses"
       >
         <div class="thumb d-flex justify-content-sm-center">
-          <img class="img-fluid" src="assets/img/courses/c1.jpg" alt="" />
+          <img class="img-fluid" [src]="C.img" alt="image" />
         </div>
         <div class="meta-text text-sm-center">
           <h4>{{ C.name }}</h4>

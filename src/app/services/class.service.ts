@@ -23,4 +23,7 @@ export class ClassService {
   editClass(obj: any, id: any) {
     return this.httpClient.put<{ msg: any }>(`${this.classUrl}/${id}`, obj);
   }
+  getClassesByUserId(userId: string) {
+    return this.httpClient.get<any>(`${this.classUrl}/student/${userId}`);
+  }
 }
