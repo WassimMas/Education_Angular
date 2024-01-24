@@ -121,7 +121,7 @@
                   name="password"
                   placeholder="password"
                   required=""
-                  type="tel"
+                  type="password"
                   formControlName="password"
                   (keyup)="matchPwd()"
                 />
@@ -152,7 +152,7 @@
                   placeholder="confirm password"
                   (keyup)="matchPwd()"
                   required=""
-                  type="tel"
+                  type="password"
                   formControlName="confirmPassword"
                 />
                 <div *ngIf="!test" style="color: red">

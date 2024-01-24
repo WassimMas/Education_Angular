@@ -116,23 +116,6 @@ const storageConfig = multer.diskStorage({
     cb(null, ifname);
   },
 });
-const imgConfig = multer.diskStorage({
-  // destination
-  destination: (req, file, cb) => {
-    const isValid = MIME_TYPE[file.mimetype];
-    let error = new Error("Mime type is invalid");
-    if (isValid) {
-      error = null;
-    }
-    cb(null, "backend/images");
-  },
-  filename: (req, file, cb) => {
-    const name = file.originalname.toLowerCase().split(" ").join("-");
-    const extension = MIME_TYPE[file.mimetype];
-    const imgName = name + "-" + Date.now() + "-crococoder-" + "." + extension;
-    cb(null, imgName);
-  },
-});
 
 //Models Importation
 const User = require("./models/user");
@@ -649,6 +632,7 @@ app.post("/users/login", (req, res) => {
               lastName: result.lastName,
               id: result._id,
               role: result.role,
+              status: result.status,
             },
             secretKey,
             { expiresIn: "1h" }
@@ -687,20 +671,72 @@ app.post(
       console.log("here crypted pwd", cryptedPwd);
       req.body.password = cryptedPwd;
 
-      // Check if 'cv' file exists in req.files
-      if (req.files["cv"] && req.files["cv"][0]) {
+      let user;
+
+      if (req.body.role == "student") {
+        user = new User({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          password: req.body.password,
+          phone: req.body.phone,
+          img: req.body.img,
+          address: req.body.address,
+          role: req.body.role,
+        });
+      } else if (req.body.role == "teacher") {
         req.body.cv = `http://localhost:3000/files/${req.files["cv"][0].filename}`;
-      }
-
-      // Check if 'img' file exists in req.files
-      if (req.files["img"] && req.files["img"][0]) {
         req.body.img = `http://localhost:3000/files/${req.files["img"][0].filename}`;
+        user = new User({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          password: req.body.password,
+          phone: req.body.phone,
+          cv: req.body.cv,
+          address: req.body.address,
+          status: req.body.status,
+          role: req.body.role,
+          speciality: req.body.speciality,
+          img: req.body.img,
+        });
+      } else if (req.body.role == "parent") {
+        const childDoc = await User.findOne({
+          phone: req.body.childPhone,
+          role: "student",
+        });
+        if (!childDoc) {
+          return res.json({ msg: "Please verify your child's phone number" });
+        }
+        user = new User({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          password: req.body.password,
+          phone: req.body.phone,
+          address: req.body.address,
+          role: req.body.role,
+          childPhone: req.body.childPhone,
+        });
+      } else if (req.body.role == "admin") {
+        user = new User({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          password: req.body.password,
+          phone: req.body.phone,
+          address: req.body.address,
+          role: req.body.role,
+        });
       }
 
-      const user = new User(req.body);
-      await user.save(); // Use await to wait for the Promise to resolve
-
-      res.json({ msg: "Added with success" });
+      user.save((err, doc) => {
+        if (err) {
+          return res.json({ msg: "Failed" });
+        } else {
+          res.json({ msg: "Added with success" });
+        }
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ msg: "Failed" });
