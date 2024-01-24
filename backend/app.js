@@ -12,7 +12,9 @@ const cors = require("cors");
 // import mongoose module
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1:27017/educationDB"),
+const mongoDBURI =
+  "mongodb+srv://wassimmastour8:14757839Wassim.2021@cluster0.0bqszok.mongodb.net/?retryWrites=true&w=majority";
+mongoose.connect(mongoDBURI),
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
