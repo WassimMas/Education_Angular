@@ -10,15 +10,26 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 // import mongoose module
-
+require("dotenv").config();
 const mongoose = require("mongoose");
-const mongoDBURI =
-  "mongodb+srv://wassimmastour8:14757839Wassim.2021@cluster0.0bqszok.mongodb.net/?retryWrites=true&w=majority";
-mongoose.connect(mongoDBURI),
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
+const uri = process.env.uri;
+console.log("uri", uri);
+
+const clientOptions = {
+  serverApi: { version: "1", strict: true, deprecationErrors: true },
+};
+mongoose
+  .connect(uri, clientOptions)
+  .then(() => {
+    console.log("Connected to MongoDB Atlas");
+
+    // Set up your routes or other configurations here
+
+    // Start the Express server
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB Atlas:", err);
+  });
 
 // import bcrypt module
 const bcrypt = require("bcrypt");
@@ -732,13 +743,10 @@ app.post(
         });
       }
 
-      user.save((err, doc) => {
-        if (err) {
-          return res.json({ msg: "Failed" });
-        } else {
-          res.json({ msg: "Added with success" });
-        }
-      });
+      // Use async/await with try-catch for saving the user
+      const savedUser = await user.save();
+
+      res.json({ msg: "Added with success" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ msg: "Failed" });
